@@ -25,12 +25,14 @@ def a_maze_ing():
         maze.add_42()
         maze.fix_isolated()
         maze.write_output()
-        # if maze.config["PRINT_MODE"] == "pygame":
 
-        # else:
-        draw_ascii(maze.config, "rgb.WHITE")
-            # interactions(maze)
-        draw_maze(maze.config)
+        if maze.config["PRINT_MODE"] == "pygame":
+            draw_maze(maze.config, 0)
+
+        else:
+            draw_ascii(maze.config, "rgb.WHITE")
+            interactions(maze)
+
 
     except pydantic.ValidationError as e:
         for error in e.errors():

@@ -4,6 +4,7 @@ def run_maze(hexa: str, w: int, h: int) -> dict:
     est = ["2", "3", "6", "7", "A", "B", "E", "F"]
     west = ["8", "9", "A", "B", "C", "D", "E", "F"]
     cell_walls = []
+
     for c in hexa:
         if len(cell_walls) >= w * h:
             break
@@ -11,6 +12,7 @@ def run_maze(hexa: str, w: int, h: int) -> dict:
             continue
         if c not in "0123456789ABCDEF":
             break
+
         walls = {"N": 0, "S": 0, "E": 0, "W": 0}
         if c in north:
             walls["N"] = 1
@@ -45,25 +47,32 @@ class rgb():
 def draw_ascii(maze_datas: dict, color: str) -> None:
     with open("maze.txt", "r") as hexa:
         hexas = hexa.read()
+
     inp = maze_datas.get("ENTRY")
     outp = maze_datas.get("EXIT")
     width = maze_datas.get("WIDTH")
     height = maze_datas.get("HEIGHT")
+    x = 0
+
     cell_walls = run_maze(hexas, width, height)
     wall = "\u2588"
+
     color_name = color.split(".")[1]
     color = getattr(rgb, color_name)
-    grid = [[" " for _ in range(width)] for _ in range(height)]
-    x = 0
+
     color_ft = [(2, 2), (2, 3), (2, 4), (3, 4),
                 (4, 4), (4, 5), (4, 6), (6, 2),
                 (7, 2), (8, 2), (8, 3), (8, 4),
                 (7, 4), (6, 4), (6, 5), (6, 6), (7, 6), (8, 6)]
+
+    grid = [[" " for _ in range(width)] for _ in range(height)]
+
     for x in range(width+2):
         if x == width+1:
             print(color_text(wall, color))
         else:
             print(color_text(wall, color), end="")
+
     for i, cell in enumerate(cell_walls):
         x = i % width
         y = i // width
@@ -77,11 +86,13 @@ def draw_ascii(maze_datas: dict, color: str) -> None:
             grid[y + 1][x] = color_text(wall, color)
         if cell.get("E") == 1 and x + 1 < width:
             grid[y][x + 1] = color_text(wall, color)
+
     for y in grid:
         print(color_text(wall, color), end="")
         for cell in y:
             print(cell, end="")
         print(color_text(wall, color))
+
     for x in range(width+2):
         if x == width+1:
             print(color_text(wall, color))

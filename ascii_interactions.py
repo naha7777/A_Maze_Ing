@@ -15,8 +15,11 @@ def interactions(maze: MazeGenerator):
         print(f"2- {path}")
         print("3- Rotate maze colors")
         print("4- Quit")
+
         choice = input("Choice (1-4): ")
+
         try:
+
             if int(choice) == 1:
                 maze.init_grid()
                 maze.prim()
@@ -24,27 +27,30 @@ def interactions(maze: MazeGenerator):
                 maze.fix_isolated()
                 maze.write_output()
                 draw_ascii(maze.config, color_list[i])
+
             elif int(choice) == 2:
                 if show_path is False:
                     draw_path(maze.config, color_list[i])
-                    show_path = not show_path
                 else:
                     draw_ascii(maze.config, color_list[i])
-                    show_path = not show_path
+                show_path = not show_path
+
             elif int(choice) == 3:
+                i += 1
                 if show_path is False:
-                    i += 1
                     draw_path(maze.config, color_list[i])
                 else:
-                    i += 1
                     draw_ascii(maze.config, color_list[i])
                 if i == 6:
                     i = -1
+
             elif int(choice) == 4:
                 exit(1)
+
             else:
                 print("ERROR: please put 1, 2, 3 or 4 !")
                 exit(1)
+
         except ValueError as e:
             print(e)
             exit(1)
