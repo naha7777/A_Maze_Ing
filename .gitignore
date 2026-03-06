@@ -1,0 +1,5 @@
+.venv
+maze.txt
+uv.lock
+__pycache__
+sources/__pycache__

@@ -1,25 +1,17 @@
-from draw_ascii import draw_ascii
-from draw_maze import draw_maze
-from ascii_interactions import interactions
-from maze_generator import MazeGenerator
+from sources.draw_ascii import draw_ascii
+from sources.draw_maze import draw_maze
+from sources.ascii_interactions import interactions
+from sources.maze_generator import MazeGenerator
 import pydantic
+import sys
 
 
 def a_maze_ing():
-    # res_parsing = parsing()
-    # try:
-    #     if "pygame" in res_parsing:
-    #         draw_maze(res_parsing)
-    #     else:
-    #         # draw_ascii(res_parsing)
-    #         draw_path(res_parsing)
-    #         interactions()
-    # except KeyboardInterrupt:
-    #     print("\nKO")
-    #     exit(1)
 
     try:
-        maze = MazeGenerator("config.txt")
+        if len(sys.argv) != 2:
+            raise ValueError("must have 2 arg")
+        maze = MazeGenerator(sys.argv[1])
         maze.create_maze()
 
         if maze.config["PRINT_MODE"] == "pygame":

@@ -1,10 +1,9 @@
-SRC = a_maze_ing.py \
-	  draw_maze.py \
-	  maze_generator.py \
-	  __init__.py \
-	  draw_ascii.py \
-	  ascii_interactions.py \
-	  draw_path.py
+SRC = ../a_maze_ing.py \
+	  ../draw_maze.py \
+	  ../maze_generator.py \
+	  ../draw_ascii.py \
+	  ../ascii_interactions.py \
+	  ../draw_path.py
 
 install:
 	uv venv --python 3.10
@@ -12,10 +11,12 @@ install:
 	uv add pydantic pygame
 
 run:
-	uv run python a_maze_ing.py; echo $$?
+	uv sync
+	.venv/bin/python3 a_maze_ing.py config.txt; echo $$?
 
 debug:
-	uv run python -m pdb a_maze_ing.py
+	uv sync
+	.venv/bin/python3 -m pdb a_maze_ing.py config.txt; echo $$?
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

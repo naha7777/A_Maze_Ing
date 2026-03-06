@@ -3,6 +3,7 @@ from collections import deque
 from typing import Literal
 import random
 from pydantic import BaseModel, Field, model_validator
+import os
 
 
 class MazeConfig(BaseModel):
@@ -215,6 +216,7 @@ class MazeGenerator:
         self.config["SEED"] = validated.seed
         self.config["PRINT_MODE"] = validated.print_mode
         self.config["OUTPUT_FILE"] = validated.output_file
+        self.config["CONFIG_FILE"] = config_file
 
     def init_grid(self) -> None:
         """Initialise the maze grid with all walls set (value 1)."""

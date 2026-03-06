@@ -1,5 +1,5 @@
-from draw_path import calcul_path_coordinates, find_path
-from maze_generator import MazeGenerator
+from sources.draw_path import calcul_path_coordinates, find_path
+from sources.maze_generator import MazeGenerator
 from typing import Any
 import sys
 import os
@@ -132,12 +132,6 @@ def change_mouse_cursor(surf1: pygame.rect.Rect, surf2: pygame.rect.Rect,
     return mouse_pos
 
 
-def play_sound() -> None:
-    wav_sound = pygame.mixer.Sound("sound.wav")
-    wav_sound.set_volume(0.5)
-    wav_sound.play()
-
-
 def hide_path(surf_lst: list, height: int, cell: int, screen: pygame.Surface,
               font: pygame.font.Font, COLORS: list, i: int,
               lines: list) -> None:
@@ -157,13 +151,23 @@ def show_the_path(surf_lst: list, height: int, cell: int,
 
 
 def easter_egg() -> None:
-    sound = pygame.mixer.Sound("amongus.wav")
-    sound.set_volume(3.0)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    sound_path = os.path.join(base_dir, "..", "resources", "amongus.wav")
+    sound = pygame.mixer.Sound(sound_path)
+    sound.set_volume(1.0)
+    sound.play()
+
+
+def play_sound() -> None:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    sound_path = os.path.join(base_dir, "..", "resources", "enzo.wav")
+    sound = pygame.mixer.Sound(sound_path)
+    sound.set_volume(1.0)
     sound.play()
 
 
 def draw_maze(maze_datas: dict, i: int) -> None:
-    with open("maze.txt", "r") as hexa:
+    with open(maze_datas['OUTPUT_FILE'], "r") as hexa:
         hexas = hexa.read()
     inp = maze_datas.get("ENTRY")
     outp = maze_datas.get("EXIT")
@@ -221,12 +225,9 @@ def draw_maze(maze_datas: dict, i: int) -> None:
 
                     if surf1.collidepoint(mouse_pos):
                         play_sound()
-                        maze = MazeGenerator()
-                        maze.init_grid()
-                        maze.prim()
-                        maze.add_42()
-                        maze.fix_isolated()
-                        maze.write_output()
+                        config_file = maze_datas['CONFIG_FILE']
+                        maze = MazeGenerator(config_file)
+                        maze.create_maze()
                         pygame.quit()
                         draw_maze(maze.config, i)
 

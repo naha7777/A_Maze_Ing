@@ -1,6 +1,6 @@
-from maze_generator import MazeGenerator
-from draw_ascii import draw_ascii
-from draw_path import draw_path
+from sources.maze_generator import MazeGenerator
+from sources.draw_ascii import draw_ascii
+from sources.draw_path import draw_path
 
 def interactions(maze: MazeGenerator):
     show_path = False
@@ -33,7 +33,7 @@ def interactions(maze: MazeGenerator):
 
             elif int(choice) == 3:
                 i += 1
-                if show_path is False:
+                if show_path is True:
                     draw_path(maze.config, color_list[i])
                 else:
                     draw_ascii(maze.config, color_list[i])
