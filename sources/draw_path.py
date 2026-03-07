@@ -1,12 +1,13 @@
 from sources.draw_ascii import run_maze, color_text, rgb
+from typing import Any
 
 
-def find_path(maze_datas: dict) -> str:
+def find_path(maze_datas: dict[str, Any]) -> str:
     with open(maze_datas['OUTPUT_FILE'], "r") as file:
         text = file.read()
 
-    width = maze_datas.get("WIDTH")
-    height = maze_datas.get("HEIGHT")
+    width: int = maze_datas["WIDTH"]
+    height: int = maze_datas["HEIGHT"]
 
     lines = text.split("\n")
     lines.reverse()
@@ -16,7 +17,8 @@ def find_path(maze_datas: dict) -> str:
     return path
 
 
-def calcul_path_coordinates(input: tuple, path: str) -> list:
+def calcul_path_coordinates(input: tuple[int, int],
+                            path: str) -> list[tuple[int, int]]:
     path_coordinates = []
 
     for c in path:
@@ -37,21 +39,21 @@ def calcul_path_coordinates(input: tuple, path: str) -> list:
     return path_coordinates
 
 
-def draw_path(maze_datas: dict, color: str) -> None:
+def draw_path(maze_datas: dict[str, Any], color: str) -> None:
     with open(maze_datas['OUTPUT_FILE'], "r") as hexa:
         hexas = hexa.read()
 
-    inp = maze_datas.get("ENTRY")
-    outp = maze_datas.get("EXIT")
-    width = maze_datas.get("WIDTH")
-    height = maze_datas.get("HEIGHT")
+    inp: tuple[int, int] = maze_datas["ENTRY"]
+    outp: tuple[int, int] = maze_datas["EXIT"]
+    width: int = maze_datas["WIDTH"]
+    height: int = maze_datas["HEIGHT"]
     x = 0
 
     cell_walls = run_maze(hexas, width, height)
     wall = "\u2588"
 
     color_name = color.split(".")[1]
-    color = getattr(rgb, color_name)
+    color_rgb = getattr(rgb, color_name)
 
     color_ft = [(2, 2), (2, 3), (2, 4), (3, 4),
                 (4, 4), (4, 5), (4, 6), (6, 2),
@@ -73,36 +75,32 @@ def draw_path(maze_datas: dict, color: str) -> None:
             if (x, y) == outp:
                 grid[y-1][x-1] = (color_text(wall, rgb.RED))
             if x % 2 != 0 and y % 2 != 0:
-                grid[y][x] = (color_text(wall, color))
+                grid[y][x] = (color_text(wall, color_rgb))
             if x % 2 == 0 and y % 2 == 0:
                 if (x, y) in path_coordinates:
                     grid[y][x] = (color_text(wall, rgb.GREEN))
                 else:
                     grid[y][x] = (color_text(wall, rgb.BLACK))
                 if cell_walls[i].get("S") == 1 and y + 1 < height:
-                    grid[y + 1][x] = color_text(wall, color)
+                    grid[y + 1][x] = color_text(wall, color_rgb)
                 if cell_walls[i].get("E") == 1 and x + 1 < width:
-                    grid[y][x + 1] = color_text(wall, color)
+                    grid[y][x + 1] = color_text(wall, color_rgb)
                 i += 1
 
     for x in range(width+2):
         if x == width+1:
-            print(color_text(wall, color))
+            print(color_text(wall, color_rgb))
         else:
-            print(color_text(wall, color), end="")
+            print(color_text(wall, color_rgb), end="")
 
-    for y in grid:
-        print(color_text(wall, color), end="")
-        for cell in y:
+    for col in grid:
+        print(color_text(wall, color_rgb), end="")
+        for cell in col:
             print(cell, end="")
-        print(color_text(wall, color))
+        print(color_text(wall, color_rgb))
 
     for x in range(width+2):
         if x == width+1:
-            print(color_text(wall, color))
+            print(color_text(wall, color_rgb))
         else:
-            print(color_text(wall, color), end="")
-
-
-if __name__ == "__main__":
-    draw_path()
+            print(color_text(wall, color_rgb), end="")

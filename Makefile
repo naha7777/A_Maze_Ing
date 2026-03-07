@@ -1,9 +1,6 @@
-SRC = ../a_maze_ing.py \
-	  ../draw_maze.py \
-	  ../maze_generator.py \
-	  ../draw_ascii.py \
-	  ../ascii_interactions.py \
-	  ../draw_path.py
+SRC =	sources/ a_maze_ing.py
+
+FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 install:
 	uv venv --python 3.10
@@ -28,12 +25,19 @@ fclean: clean
 	rm -rf .venv
 	rm -f uv.lock
 	rm -f maze.txt
+
 lint:
-	uv run flake8 $(SRC)
-	uv run murypy $(SRC) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	@clear
+	@status=0; \
+	uv run flake8 $(SRC) || status=$$?; \
+	uv run mypy $(SRC) $(FLAGS) || status=$$?; \
+	exit $$status
 
 lint-strict:
-	uv run flake8 $(SRC)
-	uv run murypy $(SRC) --strict
+	@clear
+	@status=0; \
+	uv run flake8 $(SRC) || status=$$?; \
+	uv run mypy $(SRC) $(FLAGS) --strict || status=$$?; \
+	exit $$status
 
 .PHONY: install run debug clean fclean lint lint-strict

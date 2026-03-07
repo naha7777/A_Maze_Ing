@@ -1,9 +1,8 @@
 from __future__ import annotations
 from collections import deque
-from typing import Literal
+from typing import Literal, Any
 import random
 from pydantic import BaseModel, Field, model_validator
-import os
 
 
 class MazeConfig(BaseModel):
@@ -21,6 +20,7 @@ class MazeConfig(BaseModel):
     @model_validator(mode="after")
     def validate_rules(self) -> MazeConfig:
         """Validate inter-field constraints."""
+
         if not self.output_file.endswith(".txt"):
             raise ValueError("output file must end with .txt")
 
@@ -50,6 +50,29 @@ class MazeConfig(BaseModel):
             and self.entry[1] == self.exit[1] - 1
         ):
             raise ValueError("Exit and Entry are too close")
+
+        if self.seed is not None and not (0 <= self.seed <= 2**32 - 1):
+            raise ValueError(f"SEED must be between 0 and {2**32 - 1},"
+                             f" got '{self.seed}'")
+
+        PATTERN_WALLS = {
+            (4, 1), (2, 2), (4, 2), (6, 2), (7, 2), (8, 2),
+            (2, 3), (8, 3), (1, 4), (2, 4), (3, 4), (4, 4),
+            (6, 4), (7, 4), (8, 4), (4, 5), (6, 5), (1, 6),
+            (2, 6), (4, 6), (6, 6), (7, 6), (8, 6),
+        }
+
+        entry_pos = (self.entry[0], self.entry[1])
+        exit_pos = (self.exit[0], self.exit[1])
+
+        if entry_pos in PATTERN_WALLS:
+            raise ValueError(
+                f"Entry {entry_pos} is on a '42' pattern wall"
+            )
+        if exit_pos in PATTERN_WALLS:
+            raise ValueError(
+                f"Exit {exit_pos} is on a '42' pattern wall"
+            )
 
         return self
 
@@ -119,7 +142,8 @@ class MazeGenerator:
             ValueError: If any value fails validation.
         """
         self.maze: dict[str, int] = {}
-        self.config: dict[str, object] = {}
+        self.config: dict[str, Any] = {}
+        self.last_seed: int = 0
 
         mandatory_keys = [
             "WIDTH",
@@ -228,9 +252,15 @@ class MazeGenerator:
 
     def generate(self) -> None:
         """Generate the maze using a recursive backtracker (DFS) algorithm."""
-        seed = self.config.get("SEED")
-        if seed is not None:
-            random.seed(seed)
+        raw_seed = self.config.get("SEED")
+        config_seed = int(raw_seed) if raw_seed is not None else None
+        if config_seed is None:
+            seed = random.randint(0, 2**32 - 1)
+        else:
+            seed = config_seed
+            self.config["SEED"] = None
+        self.last_seed = seed
+        random.seed(seed)
 
         width = int(self.config["WIDTH"])
         height = int(self.config["HEIGHT"])
@@ -270,13 +300,18 @@ class MazeGenerator:
             else:
                 stack.pop()
 
-        for x in range(1, width + 1):
-            if self.maze[f"{x}:{height}"] == 1:
-                self.maze[f"{x}:{height}"] = 0
+        if not bool(self.config["PERFECT"]):
+            for x in range(1, width + 1):
+                if self.maze[f"{x}:{height}"] == 1:
+                    self.maze[f"{x}:{height}"] = 0
+            for y in range(1, height + 1):
+                if self.maze[f"{width}:{y}"] == 1:
+                    self.maze[f"{width}:{y}"] = 0
 
-        for y in range(1, height + 1):
-            if self.maze[f"{width}:{y}"] == 1:
-                self.maze[f"{width}:{y}"] = 0
+        entry_x, entry_y = self.config["ENTRY"]
+        exit_x, exit_y = self.config["EXIT"]
+        self.maze[f'{entry_x}:{entry_y}'] = 0
+        self.maze[f'{exit_x}:{exit_y}'] = 0
 
     def add_42(self) -> None:
         """Carve the '42' pattern into the maze as fully closed cells.
@@ -299,37 +334,44 @@ class MazeGenerator:
                 self.maze[f"{x}:{y}"] = value
 
     def fix_isolated(self) -> None:
-        """Fix isolated cells by opening a passage to the nearest
-            open neighbour.
+        """Fix isolated regions by connecting them to the main region.
 
-        An isolated cell is an open cell (value 0) surrounded by walls on
-        all cardinal directions (N, S, W, E). For each such cell, the closest
-        open cell is found via BFS and the wall between them is opened.
+        Uses flood-fill to find all disconnected groups of open cells
+        and connects each one to the main region via BFS.
         """
         width = int(self.config["WIDTH"])
         height = int(self.config["HEIGHT"])
 
-        def is_isolated(x: int, y: int) -> bool:
-            """Return True if the cell at (x, y) is open but fully walled in.
-            """
-            if self.maze.get(f"{x}:{y}", 1) != 0:
-                return False
-            for dx, dy in ((0, -1), (0, 1), (-1, 0), (1, 0)):
-                nx, ny = x + dx, y + dy
-                if self.maze.get(f"{nx}:{ny}", 1) == 0:
-                    return False
-            return True
+        def flood_fill(sx: int, sy: int, visited: set[str]) -> set[str]:
+            """Return all open cells reachable from (sx, sy)."""
+            region: set[str] = set()
+            stack = [(sx, sy)]
+            while stack:
+                x, y = stack.pop()
+                key = f"{x}:{y}"
+                if key in visited or key in region:
+                    continue
+                if self.maze.get(key, 1) != 0:
+                    continue
+                region.add(key)
+                for dx, dy in ((0, -1), (0, 1), (-1, 0), (1, 0)):
+                    nx, ny = x + dx, y + dy
+                    if 1 <= nx <= width and 1 <= ny <= height:
+                        stack.append((nx, ny))
+            return region
 
-        def open_path_to_main(sx: int, sy: int) -> None:
-            """BFS from (sx, sy) to find nearest open cell and open the wall.
+        def connect_to_main(isolated: set[str], main: set[str]) -> None:
+            """
+            BFS from isolated region to find shortest path to main region.
             """
             queue: deque[tuple[int, int, list[tuple[int, int]]]] = deque()
-            visited: set[str] = {f"{sx}:{sy}"}
-            queue.append((sx, sy, [(sx, sy)]))
+            visited: set[str] = set(isolated)
+            for key in isolated:
+                x, y = map(int, key.split(":"))
+                queue.append((x, y, [(x, y)]))
 
             while queue:
                 x, y, path = queue.popleft()
-
                 for dx, dy in ((0, -1), (0, 1), (-1, 0), (1, 0)):
                     nx, ny = x + dx, y + dy
                     if not (1 <= nx <= width and 1 <= ny <= height):
@@ -339,18 +381,33 @@ class MazeGenerator:
                         continue
                     visited.add(nkey)
                     new_path = path + [(nx, ny)]
-
-                    if self.maze.get(nkey, 1) == 0:
+                    if nkey in main:
                         for px, py in new_path:
                             self.maze[f"{px}:{py}"] = 0
                         return
-
                     queue.append((nx, ny, new_path))
 
+        # Find all regions
+        visited: set[str] = set()
+        regions: list[set[str]] = []
         for y in range(1, height + 1):
             for x in range(1, width + 1):
-                if is_isolated(x, y):
-                    open_path_to_main(x, y)
+                key = f"{x}:{y}"
+                if self.maze.get(key, 1) == 0 and key not in visited:
+                    region = flood_fill(x, y, visited)
+                    visited |= region
+                    regions.append(region)
+
+        if not regions:
+            return
+
+        # Largest region = main
+        main_region = max(regions, key=len)
+        isolated_groups = [r for r in regions if r is not main_region]
+
+        for isolated in isolated_groups:
+            connect_to_main(isolated, main_region)
+            main_region |= isolated
 
     def encode_hex(self, x: int, y: int) -> str:
         """Encode the walls of a cell as a single hexadecimal character.
@@ -385,8 +442,8 @@ class MazeGenerator:
         width = int(self.config["WIDTH"])
         height = int(self.config["HEIGHT"])
         output_file = str(self.config["OUTPUT_FILE"])
-        entry_x, entry_y = self.config["ENTRY"]  # type: ignore[misc]
-        exit_x, exit_y = self.config["EXIT"]  # type: ignore[misc]
+        entry_x, entry_y = self.config["ENTRY"]
+        exit_x, exit_y = self.config["EXIT"]
 
         with open(output_file, "w") as f:
             for y in range(1, height + 1, 2):

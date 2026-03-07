@@ -6,7 +6,7 @@ import pydantic
 import sys
 
 
-def a_maze_ing():
+def a_maze_ing() -> None:
 
     try:
         if len(sys.argv) != 2:
@@ -15,7 +15,7 @@ def a_maze_ing():
         maze.create_maze()
 
         if maze.config["PRINT_MODE"] == "pygame":
-            draw_maze(maze.config, 0)
+            draw_maze(maze.config, 0, maze)
 
         else:
             draw_ascii(maze.config, "rgb.WHITE")

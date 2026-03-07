@@ -1,9 +1,12 @@
-def run_maze(hexa: str, w: int, h: int) -> dict:
+from typing import Any
+
+
+def run_maze(hexa: str, w: int, h: int) -> list[dict[str, int]]:
     north = ["1", "3", "5", "7", "9", "B", "D", "F"]
     south = ["4", "5", "6", "7", "C", "D", "E", "F"]
     est = ["2", "3", "6", "7", "A", "B", "E", "F"]
     west = ["8", "9", "A", "B", "C", "D", "E", "F"]
-    cell_walls = []
+    cell_walls: list[dict[str, int]] = []
 
     for c in hexa:
         if len(cell_walls) >= w * h:
@@ -26,7 +29,7 @@ def run_maze(hexa: str, w: int, h: int) -> dict:
     return cell_walls
 
 
-def color_text(text, rgb):
+def color_text(text: str, rgb: tuple[int, int, int]) -> str:
     r, g, b = rgb
     return f"\033[38;2;{r};{g};{b}m{text}\033[0m"
 
@@ -45,21 +48,20 @@ class rgb():
     BLACK = (30, 30, 30)
 
 
-def draw_ascii(maze_datas: dict, color: str) -> None:
+def draw_ascii(maze_datas: dict[str, Any], color: str) -> None:
     with open(maze_datas['OUTPUT_FILE'], "r") as hexa:
         hexas = hexa.read()
 
-    inp = maze_datas.get("ENTRY")
-    outp = maze_datas.get("EXIT")
-    width = maze_datas.get("WIDTH")
-    height = maze_datas.get("HEIGHT")
-    x = 0
+    inp = maze_datas["ENTRY"]
+    outp = maze_datas["EXIT"]
+    width = maze_datas["WIDTH"]
+    height = maze_datas["HEIGHT"]
 
     cell_walls = run_maze(hexas, width, height)
     wall = "\u2588"
 
     color_name = color.split(".")[1]
-    color = getattr(rgb, color_name)
+    color_rgb: tuple[int, int, int] = getattr(rgb, color_name)
 
     color_ft = [(2, 2), (2, 3), (2, 4), (3, 4),
                 (4, 4), (4, 5), (4, 6), (6, 2),
@@ -78,33 +80,28 @@ def draw_ascii(maze_datas: dict, color: str) -> None:
             if (x, y) == outp:
                 grid[y-1][x-1] = (color_text(wall, rgb.RED))
             if x % 2 != 0 and y % 2 != 0:
-                grid[y][x] = (color_text(wall, color))
+                grid[y][x] = (color_text(wall, color_rgb))
             if x % 2 == 0 and y % 2 == 0:
-                grid[y][x] = (color_text(wall, rgb.BLACK))
                 if cell_walls[i].get("S") == 1 and y + 1 < height:
-                    grid[y + 1][x] = color_text(wall, color)
+                    grid[y + 1][x] = color_text(wall, color_rgb)
                 if cell_walls[i].get("E") == 1 and x + 1 < width:
-                    grid[y][x + 1] = color_text(wall, color)
+                    grid[y][x + 1] = color_text(wall, color_rgb)
                 i += 1
 
     for x in range(width+2):
         if x == width+1:
-            print(color_text(wall, color))
+            print(color_text(wall, color_rgb))
         else:
-            print(color_text(wall, color), end="")
+            print(color_text(wall, color_rgb), end="")
 
-    for y in grid:
-        print(color_text(wall, color), end="")
-        for cell in y:
+    for col in grid:
+        print(color_text(wall, color_rgb), end="")
+        for cell in col:
             print(cell, end="")
-        print(color_text(wall, color))
+        print(color_text(wall, color_rgb))
 
     for x in range(width+2):
         if x == width+1:
-            print(color_text(wall, color))
+            print(color_text(wall, color_rgb))
         else:
-            print(color_text(wall, color), end="")
-
-
-if __name__ == "__main__":
-    draw_ascii()
+            print(color_text(wall, color_rgb), end="")

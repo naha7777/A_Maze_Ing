@@ -3,7 +3,7 @@ from sources.draw_ascii import draw_ascii
 from sources.draw_path import draw_path
 
 
-def interactions(maze: MazeGenerator):
+def interactions(maze: MazeGenerator) -> None:
     show_path = False
     i = 0
     color_list = ["rgb.WHITE", "rgb.YELLOW",
@@ -15,9 +15,10 @@ def interactions(maze: MazeGenerator):
         print("1- Re-generate a new maze")
         print(f"2- {path}")
         print("3- Rotate maze colors")
-        print("4- Quit")
+        print("4- Show the maze seed")
+        print("5- Quit")
 
-        choice = input("Choice (1-4): ")
+        choice = input("Choice (1-5): ")
 
         try:
 
@@ -42,16 +43,15 @@ def interactions(maze: MazeGenerator):
                     i = -1
 
             elif int(choice) == 4:
+                print(maze.last_seed)
+
+            elif int(choice) == 5:
                 exit(0)
 
             else:
-                print("ERROR: please put 1, 2, 3 or 4 !")
+                print("ERROR: please put 1, 2, 3, 4 or 5 !")
                 exit(1)
 
         except ValueError as e:
             print(e)
             exit(1)
-
-
-if __name__ == "__main__":
-    interactions()
