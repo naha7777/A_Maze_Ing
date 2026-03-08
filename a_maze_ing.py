@@ -12,7 +12,6 @@ def a_maze_ing() -> None:
         if len(sys.argv) != 2:
             raise ValueError("must have 2 arg")
         maze = MazeGenerator(sys.argv[1])
-        print(maze.config['ENTRY'])
         maze.create_maze()
 
         if maze.config["PRINT_MODE"] == "pygame":

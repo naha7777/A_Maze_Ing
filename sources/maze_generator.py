@@ -230,7 +230,7 @@ class MazeGenerator:
             for dx, dy in directions:
                 nx = x + dx
                 ny = y + dy
-                if not (1 <= nx <= width and 1 <= ny <= height):
+                if not (1 <= nx <= width+1 and 1 <= ny <= height+1):
                     continue
                 nkey = f"{nx}:{ny}"
                 if self.maze[nkey] == 0 or nkey in pre_visited:
@@ -256,7 +256,7 @@ class MazeGenerator:
                 for x in range(1, width + 1)
                 for y in range(1, height + 1)
                 if self.maze[f"{x}:{y}"] == 1
-                and (x % 2 == 0 or y % 2 == 0)
+                and (x % 2 == 1 and y % 2 == 1)
                 and (not use_42 or (x, y) not in PATTERN_WALLS)
             ]
             extra = max(1, len(walls) // 10)
@@ -265,8 +265,9 @@ class MazeGenerator:
 
         entry_x, entry_y = self.config["ENTRY"]
         exit_x, exit_y = self.config["EXIT"]
-        self.maze[f'{entry_x}:{entry_y}'] = 0
-        self.maze[f'{exit_x}:{exit_y}'] = 0
+
+        self.maze[f"{entry_x+1}:{entry_y+1}"] = 0
+        self.maze[f"{exit_x+1}:{exit_y+1}"] = 0
 
     def fix_isolated(self) -> None:
         """Fix isolated regions by connecting them to the main region."""
@@ -353,11 +354,12 @@ class MazeGenerator:
         """
         from collections import deque
         entry_x, entry_y = self.config["ENTRY"]
-        entry_x |= + 1 
-        entry_y |= + 1 
         exit_x, exit_y = self.config["EXIT"]
-        exit_x |= + 1 
-        exit_y |= + 1 
+
+        entry_x += 1
+        entry_y += 1
+        exit_x += 1
+        exit_y += 1
         goal = (exit_x, exit_y)
 
         queue: deque[tuple[tuple[int, int], list[str]]] = deque()
@@ -375,7 +377,7 @@ class MazeGenerator:
                 nx, ny = x + dx, y + dy
                 if (nx, ny) in visited:
                     continue
-                if self.maze.get(f"{nx}:{ny}", 1) != 0:
+                if self.maze[f"{nx}:{ny}"] == 1:
                     continue
                 visited.add((nx, ny))
                 queue.append(((nx, ny), directions + [direction]))
@@ -404,3 +406,4 @@ class MazeGenerator:
         self.generate()
         self.fix_isolated()
         self.write_output()
+        
