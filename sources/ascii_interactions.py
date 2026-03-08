@@ -24,7 +24,10 @@ def interactions(maze: MazeGenerator) -> None:
 
             if int(choice) == 1:
                 maze.create_maze()
-                draw_ascii(maze.config, color_list[i])
+                if show_path is True:
+                    draw_path(maze.config, color_list[i])
+                else:
+                    draw_ascii(maze.config, color_list[i])
 
             elif int(choice) == 2:
                 if show_path is False:

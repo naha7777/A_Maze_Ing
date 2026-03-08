@@ -183,8 +183,8 @@ def change_mouse_cursor(surf1: pygame.rect.Rect, surf2: pygame.rect.Rect,
 def hide_path(surf_lst: list[pygame.Surface], height: int, cell: int,
               screen: pygame.Surface, font: pygame.font.Font,
               COLORS: list[tuple[int, int, int]], i: int,
-              lines: list[str]) -> None:
-    rect_txt = surf_lst[2].get_rect(topleft=(0, (height+3)*cell + 35*2))
+              lines: list[str], maze_bottom: int) -> None:
+    rect_txt = surf_lst[2].get_rect(topleft=(0, maze_bottom + 35*2))
     pygame.draw.rect(screen, (0, 0, 0), rect_txt)
     font.render("Hide path", True, COLORS[i])
     lines[2] = "2- Hide path"
@@ -193,8 +193,8 @@ def hide_path(surf_lst: list[pygame.Surface], height: int, cell: int,
 def show_the_path(surf_lst: list[pygame.Surface], height: int, cell: int,
                   screen: pygame.Surface, font: pygame.font.Font,
                   COLORS: list[tuple[int, int, int]], i: int,
-                  lines: list[str]) -> None:
-    rect_txt = surf_lst[2].get_rect(topleft=(0, (height+3)*cell + 35*2))
+                  lines: list[str], maze_bottom: int) -> None:
+    rect_txt = surf_lst[2].get_rect(topleft=(0, maze_bottom + 35*2))
     pygame.draw.rect(screen, (0, 0, 0), rect_txt)
     lines[2] = "2- Show path from entry to exit"
     font.render(lines[2], True, COLORS[i])
@@ -287,7 +287,7 @@ def draw_overlay(screen: pygame.Surface, screen_size: tuple[int, int],
     screen.blit(overlay, (0, 0))
     font = pygame.font.SysFont('monospace', 23)
     write = font.render("- QUIT -", True, RED)
-    screen.blit(write, (0, screen_size[1] - 60))
+    screen.blit(write, (0, screen_size[1] - 40))
 
 
 def draw_maze(maze_datas: dict[str, Any], i: int,
@@ -426,13 +426,13 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
                                        x, y, x1, y1, x2, y2, color_ft,
                                        path_coordinates, COLORS[i])
                             hide_path(surf_lst, height, cell, screen, font,
-                                      COLORS, i, lines)
+                                      COLORS[i], i, lines, maze_bottom )
                         else:
                             print_walls(cell_walls, width, height, cell,
                                         screen, x, y, x1, y1, x2, y2, color_ft,
-                                        COLORS[i], )
+                                        COLORS[i])
                             show_the_path(surf_lst, height, cell, screen, font,
-                                          COLORS, i, lines)
+                                          COLORS[i], i, lines, maze_bottom)
                         show_path = not show_path
 
                     elif surf3.collidepoint(mouse_pos):

@@ -6,14 +6,10 @@ def find_path(maze_datas: dict[str, Any]) -> str:
     with open(maze_datas['OUTPUT_FILE'], "r") as file:
         text = file.read()
 
-    width: int = maze_datas["WIDTH"]
-    height: int = maze_datas["HEIGHT"]
-
     lines = text.split("\n")
     lines.reverse()
 
     path = lines[1]
-    path = text[(width * height) + height + 1:]
     return path
 
 
@@ -63,24 +59,27 @@ def draw_path(maze_datas: dict[str, Any], color: str) -> None:
     grid = [[" " for _ in range(width)] for _ in range(height)]
 
     path = find_path(maze_datas)
-    path_coordinates = calcul_path_coordinates(inp, path)
+    inp_grid = (inp[0] - 1, inp[1] - 1)
+    outp_grid = (outp[0] - 1, outp[1] - 1)
+    path_coordinates = calcul_path_coordinates(inp_grid, path)
 
     i = 0
     for y in range(height):
         for x in range(width):
             if (x, y) in color_ft:
                 grid[y-1][x-1] = (color_text(wall, rgb.BLUE))
-            if (x, y) == inp:
-                grid[y-1][x-1] = (color_text(wall, rgb.GREEN))
-            if (x, y) == outp:
-                grid[y-1][x-1] = (color_text(wall, rgb.RED))
+            if (x, y) == inp_grid:
+                grid[y][x] = (color_text(wall, rgb.GREEN))
+            if (x, y) == outp_grid:
+                grid[y][x] = (color_text(wall, rgb.RED))
             if x % 2 != 0 and y % 2 != 0:
                 grid[y][x] = (color_text(wall, color_rgb))
-            if x % 2 == 0 and y % 2 == 0:
-                if (x, y) in path_coordinates:
-                    grid[y][x] = (color_text(wall, rgb.GREEN))
+            if (x, y) in path_coordinates:
+                if (x, y) == path_coordinates[len(path_coordinates)-1]:
+                    continue
                 else:
-                    grid[y][x] = (color_text(wall, rgb.BLACK))
+                    grid[y][x] = (color_text(wall, rgb.GREEN))
+            if x % 2 == 0 and y % 2 == 0:
                 if cell_walls[i].get("S") == 1 and y + 1 < height:
                     grid[y + 1][x] = color_text(wall, color_rgb)
                 if cell_walls[i].get("E") == 1 and x + 1 < width:
