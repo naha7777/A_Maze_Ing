@@ -20,8 +20,8 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, start: tuple[int, int], width: int, height: int,
                  cell: int) -> None:
         super().__init__()
-        px = start[0] * cell + cell // 2
-        py = start[1] * cell + cell // 2
+        px = start[0] * cell + cell + cell// 2
+        py = start[1] * cell + cell + cell// 2
         if cell == 20:
             player_size = cell / 2
         elif cell == 10:
@@ -61,8 +61,8 @@ class Player(pygame.sprite.Sprite):
 class End(pygame.sprite.Sprite):
     def __init__(self, end: tuple[int, int], cell: int) -> None:
         super().__init__()
-        px = end[0] * cell + cell // 2
-        py = end[1] * cell + cell // 2
+        px = end[0] * cell + cell + cell // 2
+        py = end[1] * cell + cell + cell // 2
         self.image = pygame.Surface((cell - 4, cell - 4))
         self.image.fill(RED)
         self.rect = self.image.get_rect(center=(px, py))
@@ -133,20 +133,20 @@ def print_walls(cell_walls: list[dict[str, int]], width: int, height: int,
             if x0 % 2 == 0 and y0 % 2 == 0:
                 if cell_walls[idx].get("S") == 1 and y0 + 1 < height:
                     pygame.draw.rect(screen, color, (cell_x, cell_y + cell,
-                                     cell, cell))
+                                                     cell, cell))
                 if cell_walls[idx].get("E") == 1 and x0 + 1 < width:
                     pygame.draw.rect(screen, color, (cell_x + cell, cell_y,
-                                     cell, cell))
+                                                     cell, cell))
                 idx += 1
+
             if (x0, y0) in color_ft:
-                pygame.draw.rect(screen, BLUE, (cell_x-cell, cell_y-cell,
+                pygame.draw.rect(screen, BLUE, (cell_x - cell, cell_y - cell,
                                                 cell, cell))
             if x0 == x1 and y0 == y1:
-                pygame.draw.rect(screen, GREEN, (cell_x-cell, cell_y-cell,
-                                                 cell, cell))
+                pygame.draw.rect(screen, GREEN, (cell_x, cell_y, cell, cell))
             if x0 == x2 and y0 == y2:
-                pygame.draw.rect(screen, RED, (cell_x-cell, cell_y-cell, cell,
-                                               cell))
+                pygame.draw.rect(screen, RED, (cell_x, cell_y, cell, cell))
+                idx += 1
 
 
 def print_path(cell_walls: list[dict[str, int]], width: int, height: int,
@@ -161,7 +161,23 @@ def print_path(cell_walls: list[dict[str, int]], width: int, height: int,
             cell_x = x + x0 * cell + cell
             cell_y = y + y0 * cell + cell
             if (x0, y0) in path_coordinates:
-                pygame.draw.rect(screen, GREEN, (cell_x-cell, cell_y-cell,
+                pygame.draw.rect(screen, GREEN, (cell_x, cell_y,
+                                                 cell, cell))
+
+
+def rm_path(cell_walls: list[dict[str, int]], width: int, height: int,
+               cell: int, screen: pygame.Surface, x: int, y: int, x1: int,
+               y1: int, x2: int, y2: int, color_ft: list[tuple[int, int]],
+               path_coordinates: list[tuple[int, int]],
+               color: tuple[int, int, int]) -> None:
+    print_walls(cell_walls, width, height, cell, screen, x, y, x1, y1, x2, y2,
+                color_ft, color)
+    for y0 in range(height):
+        for x0 in range(width):
+            cell_x = x + x0 * cell + cell
+            cell_y = y + y0 * cell + cell
+            if (x0, y0) in path_coordinates:
+                pygame.draw.rect(screen, BLACK, (cell_x, cell_y,
                                                  cell, cell))
 
 
@@ -180,24 +196,24 @@ def change_mouse_cursor(surf1: pygame.rect.Rect, surf2: pygame.rect.Rect,
     return mouse_pos
 
 
-def hide_path(surf_lst: list[pygame.Surface], height: int, cell: int,
+def hide_path(surf_lst: list[pygame.Surface],
               screen: pygame.Surface, font: pygame.font.Font,
-              COLORS: list[tuple[int, int, int]], i: int,
+              color: list[tuple[int, int, int]],
               lines: list[str], maze_bottom: int) -> None:
     rect_txt = surf_lst[2].get_rect(topleft=(0, maze_bottom + 35*2))
     pygame.draw.rect(screen, (0, 0, 0), rect_txt)
-    font.render("Hide path", True, COLORS[i])
+    font.render("Hide path", True, color)
     lines[2] = "2- Hide path"
 
 
-def show_the_path(surf_lst: list[pygame.Surface], height: int, cell: int,
+def show_the_path(surf_lst: list[pygame.Surface],
                   screen: pygame.Surface, font: pygame.font.Font,
-                  COLORS: list[tuple[int, int, int]], i: int,
+                  color: list[tuple[int, int, int]],
                   lines: list[str], maze_bottom: int) -> None:
     rect_txt = surf_lst[2].get_rect(topleft=(0, maze_bottom + 35*2))
     pygame.draw.rect(screen, (0, 0, 0), rect_txt)
     lines[2] = "2- Show path from entry to exit"
-    font.render(lines[2], True, COLORS[i])
+    font.render(lines[2], True, color)
 
 
 def easter_egg() -> None:
@@ -288,6 +304,9 @@ def draw_overlay(screen: pygame.Surface, screen_size: tuple[int, int],
     font = pygame.font.SysFont('monospace', 23)
     write = font.render("- QUIT -", True, RED)
     screen.blit(write, (0, screen_size[1] - 40))
+    font = pygame.font.SysFont('monospace', 23)
+    write = font.render("- PLAY AGAIN -", True, RED)
+    screen.blit(write, (0, screen_size[1] - 110))
 
 
 def draw_maze(maze_datas: dict[str, Any], i: int,
@@ -301,11 +320,9 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
     raw_height = maze_datas.get("HEIGHT")
 
     if not isinstance(raw_inp, tuple) or not isinstance(raw_outp, tuple):
-        print("ERROR: invalid ENTRY or EXIT")
-        return
+        raise ValueError("ERROR: invalid ENTRY or EXIT")
     if not isinstance(raw_width, int) or not isinstance(raw_height, int):
-        print("ERROR: invalid WIDTH or HEIGHT")
-        return
+        raise ValueError("ERROR: invalid WIDTH or HEIGHT")
 
     pygame.init()
     pygame.font.init()
@@ -380,7 +397,7 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
     all_sprites: pygame.sprite.AbstractGroup[Any] = pygame.sprite.Group()
     all_sprites.add(player)
 
-    arrival = End(outp, cell)
+    arrival = End(raw_outp, cell)
     arrival_group: pygame.sprite.Group[End] = pygame.sprite.Group()
     arrival_group.add(arrival)
     all_sprites.add(arrival)
@@ -425,20 +442,20 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
                             print_path(cell_walls, width, height, cell, screen,
                                        x, y, x1, y1, x2, y2, color_ft,
                                        path_coordinates, COLORS[i])
-                            hide_path(surf_lst, height, cell, screen, font,
-                                      COLORS[i], i, lines, maze_bottom )
+                            hide_path(surf_lst, screen, font,
+                                      COLORS[i], lines, maze_bottom )
                         else:
-                            print_walls(cell_walls, width, height, cell,
-                                        screen, x, y, x1, y1, x2, y2, color_ft,
-                                        COLORS[i])
-                            show_the_path(surf_lst, height, cell, screen, font,
-                                          COLORS[i], i, lines, maze_bottom)
+                            rm_path(cell_walls, width, height, cell, screen,
+                                       x, y, x1, y1, x2, y2, color_ft,
+                                       path_coordinates, COLORS[i])
+                            show_the_path(surf_lst, screen, font,
+                                          COLORS[i], lines, maze_bottom)
                         show_path = not show_path
 
                     elif surf3.collidepoint(mouse_pos):
                         play_sound()
                         i += 1
-                        if show_path is False:
+                        if show_path is True:
                             print_path(cell_walls, width, height, cell, screen,
                                        x, y, x1, y1, x2, y2, color_ft,
                                        path_coordinates, COLORS[i])
@@ -451,7 +468,24 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
 
                     elif surf4.collidepoint(mouse_pos):
                         play_sound()
-                        go_gaming = True
+                        if show_path:
+                            print("Please, hide the path!")
+                        else:
+                            won = False
+                            go_gaming = True
+                            player.kill()
+                            player = Player(inp, width, height, cell)
+                            arrival = End(raw_outp, cell)
+                            all_sprites.empty()
+                            arrival_group.empty()
+                            all_sprites.add(player)
+                            all_sprites.add(arrival)
+                            arrival_group.add(arrival)
+                            screen.fill(BLACK)
+                            pygame.draw.rect(screen, COLORS[i],
+                                            (x, y, (width+2) * cell, (height+2) * cell), cell)
+                            print_walls(cell_walls, width, height, cell, screen, x, y, x1,
+                                        y1, x2, y2, color_ft, COLORS[i])
 
                     elif surf5.collidepoint(mouse_pos):
                         play_sound()
@@ -462,8 +496,7 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
                         sys.exit(0)
 
             else:
-                pygame.draw.rect(screen,
-                                 COLORS[i],
+                pygame.draw.rect(screen, COLORS[i],
                                  (x, y, (width+2) * cell, (height+2) * cell),
                                  cell)
                 print_walls(cell_walls, width, height, cell, screen, x, y, x1,
