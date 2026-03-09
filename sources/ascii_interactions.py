@@ -4,6 +4,7 @@ from sources.draw_path import draw_path
 
 
 def interactions(maze: MazeGenerator) -> None:
+    """Manage interactions between user and maze"""
     show_path = False
     i = 0
     color_list = ["rgb.WHITE", "rgb.YELLOW",
