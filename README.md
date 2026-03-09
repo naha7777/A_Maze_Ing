@@ -104,13 +104,17 @@ For programing we used **pydantic** and **pygame**
 
 ## Resources
 ### Documentation
-- [Build a Maze with Pygame]https://medium.com/@uva/build-a-simple-timed-maze-game-with-python-and-pygame-a20c1cea5406
-- [Ascii Representations]https://www.asciiart.eu/art/88f7b53851e55259
+#### Algorithms
 - [Algorithms]https://professor-l.github.io/mazes
 - [ALgorithms]https://www.kaggle.com/code/mexwell/maze-runner-shortest-path-algorithms
+#### Visual
+- [Ascii Representations]https://www.asciiart.eu/art/88f7b53851e55259
 - [Maze creation with pixel art]https://www.pixilart.com/draw
-- [Pygame keys]https://www.pygame.org/docs/ref/key.html
 - [RGB colors]https://www.rapidtables.com/web/color/RGB_Color.html
+#### Bonus
+- [Build a Maze with Pygame]https://medium.com/@uva/build-a-simple-timed-maze-game-with-python-and-pygame-a20c1cea5406
+- [Pygame keys]https://www.pygame.org/docs/ref/key.html
+#### Else
 - [GIT usage for groups]https://git-scm.com/book/fr/v2/Les-branches-avec-Git-Gestion-des-branches
 
 ### AI Usage
