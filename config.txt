@@ -1,7 +1,7 @@
 # comment line
 
-WIDTH=8
-HEIGHT=8
+WIDTH=20
+HEIGHT=20
 ENTRY=2,5
 EXIT=1,1
 OUTPUT_FILE=maze.txt

@@ -23,12 +23,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         px = start[0] * cell + cell + cell // 2
         py = start[1] * cell + cell + cell // 2
-        if cell == 20:
-            player_size = cell / 2
-        elif cell == 10:
-            player_size = cell / 2
-        else:
-            player_size = cell / 2
+        player_size = cell / 2
         self.image = pygame.Surface((player_size, player_size))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect(center=(px, py))
@@ -197,7 +192,7 @@ def change_mouse_cursor(surf1: pygame.rect.Rect, surf2: pygame.rect.Rect,
 
 def hide_path(surf_lst: list[pygame.Surface],
               screen: pygame.Surface, font: pygame.font.Font,
-              color: list[tuple[int, int, int]],
+              color: tuple[int, int, int],
               lines: list[str], maze_bottom: int) -> None:
     rect_txt = surf_lst[2].get_rect(topleft=(0, maze_bottom + 35*2))
     pygame.draw.rect(screen, (0, 0, 0), rect_txt)
@@ -207,7 +202,7 @@ def hide_path(surf_lst: list[pygame.Surface],
 
 def show_the_path(surf_lst: list[pygame.Surface],
                   screen: pygame.Surface, font: pygame.font.Font,
-                  color: list[tuple[int, int, int]],
+                  color: tuple[int, int, int],
                   lines: list[str], maze_bottom: int) -> None:
     rect_txt = surf_lst[2].get_rect(topleft=(0, maze_bottom + 35*2))
     pygame.draw.rect(screen, (0, 0, 0), rect_txt)
@@ -268,7 +263,9 @@ def game(player: Player, arrival_group: pygame.sprite.Group[End],
          screen: pygame.Surface,
          all_sprites: pygame.sprite.AbstractGroup[Any], won: bool,
          arrival: End, walls_group: pygame.sprite.Group[Wall],
-         height: int, width: int, cell: int) -> bool:
+         height: int, width: int, cell: int, cell_walls: list[dict[str, int]],
+         x: int, y: int, x1: int, y1: int, x2: int, y2: int,
+         color_ft: list[tuple[int, int]], color: tuple[int, int, int]) -> bool:
     lines = ["Play with :",
              "   [↑]   ",
              "[←][↓][→]"]
@@ -276,19 +273,18 @@ def game(player: Player, arrival_group: pygame.sprite.Group[End],
     for nb, line in enumerate(lines):
         surf = font.render(line, True, WHITE)
         screen.blit(surf, ((width+2)*cell+10, (height//2)*cell + nb * 35))
+    pygame.draw.rect(screen, BLACK,
+                     (0, 0, (width+2) * cell, (height+2) * cell))
+    pygame.draw.rect(screen, color,
+                     (0, 0, (width+2) * cell, (height+2) * cell), cell)
+    print_walls(cell_walls, width, height, cell,
+                screen, x, y, x1, y1, x2, y2, color_ft,
+                color)
     player.update(walls_group)
     arrival.update() if hasattr(arrival, 'update') else None
     all_sprites.draw(screen)
-    if won:
-        screen.fill(BLACK)
-        return True
     touch = pygame.sprite.spritecollideany(player, arrival_group)
     if touch:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        sound_path = os.path.join(base_dir, "..", "resources", "scary.wav")
-        sound = pygame.mixer.Sound(sound_path)
-        sound.set_volume(1.0)
-        sound.play()
         return True
     return False
 
@@ -313,10 +309,10 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
     output_file = str(maze_datas['OUTPUT_FILE'])
     with open(output_file, "r") as hexa:
         hexas = hexa.read()
-    raw_inp = maze_datas.get("ENTRY")
-    raw_outp = maze_datas.get("EXIT")
-    raw_width = maze_datas.get("WIDTH")
-    raw_height = maze_datas.get("HEIGHT")
+    raw_inp: int | None = maze_datas.get("ENTRY")
+    raw_outp: int | None = maze_datas.get("EXIT")
+    raw_width: int | Any = maze_datas.get("WIDTH")
+    raw_height: int | Any = maze_datas.get("HEIGHT")
 
     if raw_width//2 >= 233:
         raise ValueError("Width too hight for pygame mode")
@@ -471,6 +467,7 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
                         else:
                             won = False
                             go_gaming = True
+                            play = True
                             start_time = time.time()
                             player.kill()
                             player = Player(inp, width, height, cell)
@@ -536,6 +533,8 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
                     else:
                         won = False
                         go_gaming = True
+                        play = True
+                        start_time = time.time()
                         player.kill()
                         player = Player(inp, width, height, cell)
                         arrival = End(raw_outp, cell)
@@ -569,15 +568,7 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
                     surf = font.render(line, True, COLORS[i])
                     surf_lst.append(surf)
                     screen.blit(surf, (1, maze_bottom + nb * line_h))
-        # if go_gaming:
-        #     elapsed = time.time() - start_time
-        #     mins = int(elapsed) // 60
-        #     secs = int(elapsed) % 60
-        #     font_timer = pygame.font.SysFont('monospace', 23)
-        #     timer_str = f"Time: {mins:02d}:{secs:02d}"
-        #     timer_surf = font_timer.render(timer_str, True, WHITE)
-        #     pygame.draw.rect(screen, BLACK, ((width+2)*cell+10, 50, 200, 30))
-        #     screen.blit(timer_surf, ((width+2)*cell+10, 50))
+
         if go_gaming:
             elapsed = time.time() - start_time
             mins = int(elapsed) // 60
@@ -588,8 +579,17 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
             pygame.draw.rect(screen, BLACK, ((width+2)*cell+10, 50, 200, 30))
             screen.blit(timer_surf, ((width+2)*cell+10, 50))
             won = game(player, arrival_group, screen, all_sprites, won,
-                       arrival, walls_group, height, width, cell)
+                       arrival, walls_group, height, width, cell, cell_walls,
+                       x, y, x1, y1, x2, y2, color_ft, COLORS[i])
             if won:
+                if play:
+                    base_dir = os.path.dirname(os.path.abspath(__file__))
+                    sound_path = os.path.join(base_dir, "..", "resources",
+                                              "scary.wav")
+                    sound = pygame.mixer.Sound(sound_path)
+                    sound.set_volume(1.0)
+                    sound.play()
+                    play = False
                 draw_overlay(screen, screen_size, bg, cell)
 
         pygame.display.update()
