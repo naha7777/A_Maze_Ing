@@ -217,7 +217,7 @@ def show_the_path(surf_lst: list[pygame.Surface],
 def easter_egg() -> None:
     """Play the Among Us easter egg sound."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    sound_path = os.path.join(base_dir, "..", "resources", "amongus.wav")
+    sound_path = os.path.join(base_dir, "resources", "amongus.wav")
     sound = pygame.mixer.Sound(sound_path)
     sound.set_volume(1.0)
     sound.play()
@@ -226,7 +226,7 @@ def easter_egg() -> None:
 def play_sound() -> None:
     """Play the default UI interaction sound."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    sound_path = os.path.join(base_dir, "..", "resources", "enzo.wav")
+    sound_path = os.path.join(base_dir, "resources", "enzo.wav")
     sound = pygame.mixer.Sound(sound_path)
     sound.set_volume(1.0)
     sound.play()
@@ -420,7 +420,7 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
     create_walls(cell_walls, width, height, cell, walls_group, color_ft)
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    img_path = os.path.join(base_dir, "..", "resources", "fnaf.png")
+    img_path = os.path.join(base_dir, "resources", "fnaf.png")
     bg = pygame.image.load(img_path).convert()
     bg = pygame.transform.scale(bg, screen_size)
 
@@ -595,7 +595,7 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
             if won:
                 if play:
                     base_dir = os.path.dirname(os.path.abspath(__file__))
-                    sound_path = os.path.join(base_dir, "..", "resources",
+                    sound_path = os.path.join(base_dir, "resources",
                                               "scary.wav")
                     sound = pygame.mixer.Sound(sound_path)
                     sound.set_volume(1.0)
