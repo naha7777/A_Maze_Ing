@@ -19,9 +19,16 @@ except ModuleNotFoundError:
 
 
 class Player(pygame.sprite.Sprite):
-    """Create the player for the game mode"""
+    """Player sprite controlled by arrow keys."""
     def __init__(self, start: tuple[int, int], width: int, height: int,
                  cell: int) -> None:
+        """
+        Args:
+            start (tuple[int, int]): Starting cell coordinates.
+            width (int): Maze width.
+            height (int): Maze height.
+            cell (int): Cell size in pixels.
+        """
         super().__init__()
         px = start[0] * cell + cell + cell // 2
         py = start[1] * cell + cell + cell // 2
@@ -35,7 +42,7 @@ class Player(pygame.sprite.Sprite):
         self.height = height
 
     def update(self, walls_group: pygame.sprite.Group[Any]) -> None:
-        """Control the player and avoid collisions"""
+        """Move the player and resolve wall collisions."""
         keys = pygame.key.get_pressed()
         self.vel.x = (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * 4
         self.vel.y = (keys[pygame.K_DOWN] - keys[pygame.K_UP]) * 4
@@ -58,8 +65,13 @@ class Player(pygame.sprite.Sprite):
 
 
 class End(pygame.sprite.Sprite):
-    """Create the output wall"""
+    """Exit marker sprite placed at the maze's exit cell."""
     def __init__(self, end: tuple[int, int], cell: int) -> None:
+        """
+        Args:
+            end (tuple[int, int]): Exit cell coordinates.
+            cell (int): Cell size in pixels.
+        """
         super().__init__()
         px = end[0] * cell + cell + cell // 2
         py = end[1] * cell + cell + cell // 2
@@ -71,8 +83,15 @@ class End(pygame.sprite.Sprite):
 
 
 class Wall(pygame.sprite.Sprite):
-    """Create maze walls"""
+    """Wall sprite used for collision detection."""
     def __init__(self, x: int, y: int, w: int, h: int) -> None:
+        """
+        Args:
+            x (int): X position in pixels.
+            y (int): Y position in pixels.
+            w (int): Width in pixels.
+            h (int): Height in pixels.
+        """
         super().__init__()
         self.image = pygame.Surface((w, h))
         self.image.fill(WHITE)
@@ -96,7 +115,7 @@ def print_walls(cell_walls: list[dict[str, int]], width: int, height: int,
                 cell: int, screen: pygame.Surface, x: int, y: int, x1: int,
                 y1: int, x2: int, y2: int, color_ft: list[tuple[int, int]],
                 color: tuple[int, int, int]) -> None:
-    """Print on a new screen the maze"""
+    """Render the maze walls, entry, and exit onto the screen."""
     idx = 0
     for y0 in range(height):
         for x0 in range(width):
@@ -128,7 +147,7 @@ def print_path(cell_walls: list[dict[str, int]], width: int, height: int,
                y1: int, x2: int, y2: int, color_ft: list[tuple[int, int]],
                path_coordinates: list[tuple[int, int]],
                color: tuple[int, int, int]) -> None:
-    """Print the path between the entrance and exit"""
+    """Render the maze with the solution path highlighted in green."""
     print_walls(cell_walls, width, height, cell, screen, x, y, x1, y1, x2, y2,
                 color_ft, color)
     for y0 in range(height):
@@ -145,7 +164,7 @@ def rm_path(cell_walls: list[dict[str, int]], width: int, height: int,
             y1: int, x2: int, y2: int, color_ft: list[tuple[int, int]],
             path_coordinates: list[tuple[int, int]],
             color: tuple[int, int, int]) -> None:
-    """Remove the path : it puts black cellules on each cellule of the path"""
+    """Hide the solution path by overpainting it in black."""
     print_walls(cell_walls, width, height, cell, screen, x, y, x1, y1, x2, y2,
                 color_ft, color)
     for y0 in range(height):
@@ -161,7 +180,7 @@ def change_mouse_cursor(surf1: pygame.rect.Rect, surf2: pygame.rect.Rect,
                         surf3: pygame.rect.Rect, surf4: pygame.rect.Rect,
                         surf0: pygame.rect.Rect, surf5: pygame.rect.Rect,
                         surf6: pygame.rect.Rect) -> tuple[int, int]:
-    """It change the cursor of the mouse on surfaces predefined"""
+    """Switch cursor to a hand when hovering over clickable menu areas."""
     mouse_pos = pygame.mouse.get_pos()
     if surf1.collidepoint(mouse_pos) or surf2.collidepoint(mouse_pos)\
         or surf3.collidepoint(mouse_pos) or surf4.collidepoint(mouse_pos)\
@@ -177,7 +196,7 @@ def hide_path(surf_lst: list[pygame.Surface],
               screen: pygame.Surface, font: pygame.font.Font,
               color: tuple[int, int, int],
               lines: list[str], maze_bottom: int) -> None:
-    """Replace "Show the path" with "Hide the path" in the menu"""
+    """Update the menu label to 'Hide path'."""
     rect_txt = surf_lst[2].get_rect(topleft=(0, maze_bottom + 35*2))
     pygame.draw.rect(screen, (0, 0, 0), rect_txt)
     font.render("Hide path", True, color)
@@ -188,7 +207,7 @@ def show_the_path(surf_lst: list[pygame.Surface],
                   screen: pygame.Surface, font: pygame.font.Font,
                   color: tuple[int, int, int],
                   lines: list[str], maze_bottom: int) -> None:
-    """Replace "Hide the path" with "Show the path" in the menu"""
+    """Update the menu label to 'Show path from entry to exit'."""
     rect_txt = surf_lst[2].get_rect(topleft=(0, maze_bottom + 35*2))
     pygame.draw.rect(screen, (0, 0, 0), rect_txt)
     lines[2] = "2- Show path from entry to exit"
@@ -196,7 +215,7 @@ def show_the_path(surf_lst: list[pygame.Surface],
 
 
 def easter_egg() -> None:
-    """Play a song"""
+    """Play the Among Us easter egg sound."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     sound_path = os.path.join(base_dir, "..", "resources", "amongus.wav")
     sound = pygame.mixer.Sound(sound_path)
@@ -205,7 +224,7 @@ def easter_egg() -> None:
 
 
 def play_sound() -> None:
-    """Play a song"""
+    """Play the default UI interaction sound."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     sound_path = os.path.join(base_dir, "..", "resources", "enzo.wav")
     sound = pygame.mixer.Sound(sound_path)
@@ -215,7 +234,7 @@ def play_sound() -> None:
 
 def create_border_walls(width: int, height: int, cell: int,
                         walls_group: pygame.sprite.Group[Wall]) -> None:
-    """Put the border of the maze in the class Wall"""
+    """Add the outer border walls to the walls group."""
     for x0 in range(width + 2):
         walls_group.add(Wall(x0 * cell, 0, cell, cell))
         walls_group.add(Wall(x0 * cell, (height + 1) * cell, cell, cell))
@@ -228,7 +247,7 @@ def create_border_walls(width: int, height: int, cell: int,
 def create_walls(cell_walls: list[dict[str, int]], width: int, height: int,
                  cell: int, walls_group: pygame.sprite.Group[Wall],
                  color_ft: list[tuple[int, int]]) -> None:
-    """Put the walls in the class Wall"""
+    """Populate the walls group from cell wall data."""
     idx = 0
     for y0 in range(height):
         for x0 in range(width):
@@ -255,7 +274,7 @@ def game(player: Player, arrival_group: pygame.sprite.Group[End],
          height: int, width: int, cell: int, cell_walls: list[dict[str, int]],
          x: int, y: int, x1: int, y1: int, x2: int, y2: int,
          color_ft: list[tuple[int, int]], color: tuple[int, int, int]) -> bool:
-    """Manage the game : player, collision, end of it"""
+    """Run one game frame: update player, draw sprites, check win condition."""
     lines = ["Play with :",
              "   [↑]   ",
              "[←][↓][→]"]
@@ -281,9 +300,7 @@ def game(player: Player, arrival_group: pygame.sprite.Group[End],
 
 def draw_overlay(screen: pygame.Surface, screen_size: tuple[int, int],
                  bg: pygame.Surface) -> None:
-    """
-    Print an overlay at the end of the game and ask for quit or play again
-    """
+    """Draw the win screen overlay with Quit and Play Again options."""
     bg_scaled = pygame.transform.scale(bg, screen_size)
     screen.blit(bg_scaled, (0, 0))
     overlay = pygame.Surface((screen_size), pygame.SRCALPHA)
@@ -299,7 +316,7 @@ def draw_overlay(screen: pygame.Surface, screen_size: tuple[int, int],
 
 def draw_maze(maze_datas: dict[str, Any], i: int,
               maze: MazeGenerator) -> None:
-    """Manage everything related to print the maze and menu with pygame"""
+    """Initialize and run the main pygame loop for the maze viewer."""
     output_file = str(maze_datas['OUTPUT_FILE'])
     with open(output_file, "r") as hexa:
         hexas = hexa.read()

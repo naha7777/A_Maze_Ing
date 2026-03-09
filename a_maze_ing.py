@@ -7,8 +7,7 @@ import sys
 
 
 def a_maze_ing() -> None:
-    """The main"""
-
+    """Entry point: parse arguments, generate and display the maze."""
     try:
         if len(sys.argv) != 2:
             raise ValueError("must have 2 arg")

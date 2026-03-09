@@ -2,7 +2,7 @@ from typing import Any
 
 
 def run_maze(hexa: str, w: int, h: int) -> list[dict[str, int]]:
-    """Calcul the directions of each cellule"""
+    """Parse hex characters and return wall configurations for each cell."""
     north = ["1", "3", "5", "7", "9", "B", "D", "F"]
     south = ["4", "5", "6", "7", "C", "D", "E", "F"]
     est = ["2", "3", "6", "7", "A", "B", "E", "F"]
@@ -31,13 +31,13 @@ def run_maze(hexa: str, w: int, h: int) -> list[dict[str, int]]:
 
 
 def color_text(text: str, rgb: tuple[int, int, int]) -> str:
-    """Color the text with the RGB color code"""
+    """Wrap text with ANSI escape codes for RGB terminal coloring."""
     r, g, b = rgb
     return f"\033[38;2;{r};{g};{b}m{text}\033[0m"
 
 
 class rgb():
-    """Creation of the differents colors"""
+    """Available RGB color constants."""
     WHITE = (255, 255, 255)
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
@@ -52,7 +52,7 @@ class rgb():
 
 
 def draw_ascii(maze_datas: dict[str, Any], color: str) -> None:
-    """Draw the maze with ascii thanks to the output file"""
+    """Draw the maze in the terminal using ASCII block characters."""
     with open(maze_datas['OUTPUT_FILE'], "r") as hexa:
         hexas = hexa.read()
 

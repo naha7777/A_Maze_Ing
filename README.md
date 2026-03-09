@@ -4,16 +4,16 @@ _This project has been created as part of the 42 curriculum by anacharp, emarett
 
 ## Description
 A_Maze_Ing is a Python program dedicated to generating and visualizing mazes.\
-Its main objective is to create a tool capable of transforming a text-based configuration file into a structured maze, while provinding a visual interface for the user.\
+Its main objective is to create a tool capable of transforming a text-based configuration file into a structured maze, while providing a visual interface for the user.\
 The project is divided into three main functionalities :
 - Maze Generation : the program generates mazes of varying sizes. It can create "perfect mazes" (with a single path between the entrance and exit) and "unperfect mazes". The maze is generated from the data in the configuration file.
-- Interactive Visualization : The program offers a text-based visual display. The user can regenerate a maze, change the colors, and show or hide the shortest path to solve the puzzle. He can show the seed to regenerate the same maze after puting it in the configuration file.
+- Interactive Visualization : The program provides an interactive text-based display. The user can regenerate a maze, change the colors, and show or hide the shortest path to solve the puzzle. The user can also display the seed used for generation and reuse it in the config file to reproduce the same maze.
 - Data Export : The result is saved to a text file. Each cell is represented by a hexadecimal number encoding the position of the walls (North, South, East, West).
 
 Finally, the generation engine is designed as a reusable Python module, allowing this logic to be easily integrated into other projects.
 
 ## Instructions
-Let's start with environments et packages installation :
+Let's start with environment and package installation :
 ```bash
 make install
 ```
@@ -34,6 +34,7 @@ python3 a_maze_ing.py config.txt
 
 ## Structure and format of our config file
 The maze will be entirely generated from the data sent in the configuration file.\
+All fields are required unless marked otherwise.\
 The required data is as follows:
 | keys |description | example |
 |------|------------|---------|
@@ -49,6 +50,7 @@ The config file is `config.txt`
 
 ## The maze generation algorithm
 **Prim's algorithm** is a classic minimum spanning tree algorithm adapted for maze generation.\
+It guarantees a perfect maze : one with exactly one path between any two cells.\
 Starting from a random cell, it maintains a list of "frontier" cells (walls adjacent to the already-visited region) and repeatedly picks one at random to carve a passage into the maze.
 
 ### Why this algorithm ?
@@ -67,25 +69,36 @@ We chose Prim's algorithm for a few reasons:
 - Compliance with flake8 and mypy
 - Generating the ascii output with user interactions
 - Generating the pygame output (bonus) with user interactions
+- Other bonuses (↓ See bonus details at the bottom of this page.)
 - Writing the docstring
 
 #### emarette :
-- Algorithms : Prism and maze solving
+- Algorithms : Prim's and maze solving
 - Writing the makefile
 - Parsing the configuration file
 - Creating the maze class
 - Writing the docstring
+- Seed management
 
 ### Our anticipated planning and how it evolved
 We divided the tasks among ourselves and kept each other regularly informed of the project's progress.\
 We also worked side by side and sometimes even on the same computer, together.\
-We met every day to give each other at least a report.
+We held daily check-ins to keep each other updated on progress.
 
 ### What worked well and what could be improved
-This method allowed us to communicate a lot and to quickly resolve the problems we had.
+This approach fostered strong communication and allowed us to resolve issues quickly.
 
 ### Use of specific tools
 We shared our work with github and communicated with discord.
+
+## Bonuses :
+- Recreated the same ASCII outpout in pygame
+- Added a video game with a timer and end-game overlay
+- Menu navigation via both mouse clicks and numpad keys
+- Sound effects for menu interactions
+- Hidden easter egg soung triggered by clicking in another interactive zone
+- Cursor changes shape when hovering over clickable areas
+- SEED (originally optional) fully integrated into the interface
 
 ## Resources
 ### Documentation
@@ -101,4 +114,5 @@ We shared our work with github and communicated with discord.
 ### AI Usage
 AI was used for the following tasks :
 - help with git
+- makefile debugging
 - help for translation

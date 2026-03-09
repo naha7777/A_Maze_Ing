@@ -4,7 +4,7 @@ from sources.draw_path import draw_path
 
 
 def interactions(maze: MazeGenerator) -> None:
-    """Manage interactions between user and maze"""
+    """Manage user interactions with the maze through a text-based menu."""
     show_path = False
     i = 0
     color_list = ["rgb.WHITE", "rgb.YELLOW",
@@ -25,7 +25,7 @@ def interactions(maze: MazeGenerator) -> None:
 
             if int(choice) == 1:
                 maze.create_maze()
-                if show_path is True:
+                if show_path:
                     draw_path(maze.config, color_list[i])
                 else:
                     draw_ascii(maze.config, color_list[i])
@@ -39,7 +39,7 @@ def interactions(maze: MazeGenerator) -> None:
 
             elif int(choice) == 3:
                 i += 1
-                if show_path is True:
+                if show_path:
                     draw_path(maze.config, color_list[i])
                 else:
                     draw_ascii(maze.config, color_list[i])
@@ -53,7 +53,7 @@ def interactions(maze: MazeGenerator) -> None:
                 exit(0)
 
             else:
-                raise ValueError("please put 1, 2, 3, 4 or 5 !")
+                raise ValueError("Please enter a number between 1 and 5.")
 
         except ValueError as e:
             raise ValueError(e)

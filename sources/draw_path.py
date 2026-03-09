@@ -3,7 +3,7 @@ from typing import Any
 
 
 def find_path(maze_datas: dict[str, Any]) -> str:
-    """Find the directions for the path in the output file"""
+    """Read and return the solution path string from the output file."""
     with open(maze_datas['OUTPUT_FILE'], "r") as file:
         text = file.read()
 
@@ -16,7 +16,7 @@ def find_path(maze_datas: dict[str, Any]) -> str:
 
 def calcul_path_coordinates(input: tuple[int, int],
                             path: str) -> list[tuple[int, int]]:
-    """Calcul the coordinates for each cellule of the path we will create"""
+    """Compute the cell coordinates visited along the solution path."""
     path_coordinates = []
 
     for c in path:
@@ -38,7 +38,7 @@ def calcul_path_coordinates(input: tuple[int, int],
 
 
 def draw_path(maze_datas: dict[str, Any], color: str) -> None:
-    """Print the maze with the path in ascii"""
+    """Draw the maze in the terminal with the solution path highlighted."""
     with open(maze_datas['OUTPUT_FILE'], "r") as hexa:
         hexas = hexa.read()
 
