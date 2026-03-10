@@ -25,12 +25,11 @@ def a_maze_ing() -> None:
         for error in e.errors():
             print(f"ERROR: {error['msg'].replace('Value error, ', '')}")
 
-    except (KeyError, ValueError) as e:
+    except (KeyError, ValueError, PermissionError, FileNotFoundError, Exception) as e:
         print(f"ERROR: {e}")
 
     except KeyboardInterrupt:
         print("\nThe program was Kill")
-        exit(1)
 
 
 if __name__ == "__main__":

@@ -15,8 +15,8 @@ PATTERN_WALLS: set[tuple[int, int]] = {
 
 class MazeConfig(BaseModel):
     """Validated configuration for the maze generator."""
-    width: int = Field(..., ge=4, le=250)
-    height: int = Field(..., ge=4, le=250)
+    width: int = Field(..., ge=5, le=250)
+    height: int = Field(..., ge=5, le=250)
     entry: list[int] = Field(..., min_length=2, max_length=2)
     exit: list[int] = Field(..., min_length=2, max_length=2)
     output_file: str = Field(...)

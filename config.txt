@@ -6,8 +6,5 @@ ENTRY=0,2
 EXIT=4,3
 OUTPUT_FILE=maze.txt
 PERFECT=trUe
-PRINT_MODE=pygame
+# PRINT_MODE=pygame
 # SEED=3447740575
-
-
-
