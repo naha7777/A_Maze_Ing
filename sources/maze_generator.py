@@ -61,7 +61,7 @@ class MazeConfig(BaseModel):
         if self.width >= 233 and self.print_mode == "pygame":
             raise ValueError("Width too hight for pygame mode")
 
-        if self.height >= 83 and self.print_mode == "pygame":
+        if self.height >= 88 and self.print_mode == "pygame":
             raise ValueError("Height too hight for pygame mode")
 
         return self

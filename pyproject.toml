@@ -1,5 +1,5 @@
 [project]
-name = "mazegen-anacharp-emarett"
+name = "mazegen_anacharp_emarette"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -9,6 +9,16 @@ dependencies = [
     "pygame>=2.6.1",
     "pygame-ce>=2.5.7",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sources"]
+
+[tool.hatch.build.targets.wheel.sources]
+"sources" = "mazegen_anacharp_emarette"
 
 [dependency-groups]
 dev = [

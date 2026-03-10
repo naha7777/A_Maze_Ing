@@ -1,3 +1,0 @@
-pydantic>=2.12.5
-pygame>=2.6.1
-pygame-ce>=2.5.7

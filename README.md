@@ -77,6 +77,15 @@ The maze generation engine was designed as a reusable Python module.
 - **Configuration parser**: The configuration file parser can be adapted to load parameters for other programs using simple text configuration files.
 - **Separation of logic and interface**: The generation logic is independent from the ASCII and pygame interfaces, allowing the core engine to be reused with other visualization systems.
 
+### How install the package ?
+```bash
+python3 -m pip install --user mazegen_anacharp_emarette-0.1.0-py3-none-any.whl --force-reinstall
+```
+How run it ?
+``` bash
+python3 main_package.py config.txt
+```
+
 ## Team and project management with
 ### Roles of each team member
 #### anacharp :
