@@ -15,8 +15,8 @@ PATTERN_WALLS: set[tuple[int, int]] = {
 
 class MazeConfig(BaseModel):
     """Validated configuration for the maze generator."""
-    width: int = Field(..., ge=4, le=1000)
-    height: int = Field(..., ge=4, le=1000)
+    width: int = Field(..., ge=4, le=250)
+    height: int = Field(..., ge=4, le=250)
     entry: list[int] = Field(..., min_length=2, max_length=2)
     exit: list[int] = Field(..., min_length=2, max_length=2)
     output_file: str = Field(...)
@@ -57,6 +57,12 @@ class MazeConfig(BaseModel):
             raise ValueError(f"Entry {entry_pos} is on a '42' pattern wall")
         if exit_pos in PATTERN_WALLS:
             raise ValueError(f"Exit {exit_pos} is on a '42' pattern wall")
+
+        if self.width >= 233 and self.print_mode == "pygame":
+            raise ValueError("Width too hight for pygame mode")
+
+        if self.height >= 83 and self.print_mode == "pygame":
+            raise ValueError("Height too hight for pygame mode")
 
         return self
 
@@ -406,4 +412,3 @@ class MazeGenerator:
         self.generate()
         self.fix_isolated()
         self.write_output()
-        

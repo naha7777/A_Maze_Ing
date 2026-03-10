@@ -9,11 +9,11 @@ install:
 
 run:
 	uv sync
-	.venv/bin/python3 a_maze_ing.py config.txt; echo $$?
+	.venv/bin/python3 a_maze_ing.py config.txt
 
 debug:
 	uv sync
-	.venv/bin/python3 -m pdb a_maze_ing.py config.txt; echo $$?
+	.venv/bin/python3 -m pdb a_maze_ing.py config.txt
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

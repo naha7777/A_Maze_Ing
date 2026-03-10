@@ -45,7 +45,7 @@ The required data is as follows:
 |OUTPUT_FILE|Output file name|OUTPUT_FILE=maze.txt|
 |PERFECT|Is the maze perfect or not?|PERFECT=True|
 |SEED|(Optional) The seed to use|SEED=4533211425|
-|PRINT_MODE|(Optional) The mode to print the maze|PRINT_MODE=ascii
+|PRINT_MODE|(Optional) The mode to print the maze|PRINT_MODE=ascii|
 
 The config file is `config.txt`
 
@@ -131,6 +131,7 @@ For programing we used **pydantic** and **pygame**
 - [Pygame keys]https://www.pygame.org/docs/ref/key.html
 #### Else
 - [GIT usage for groups]https://git-scm.com/book/fr/v2/Les-branches-avec-Git-Gestion-des-branches
+- [Uv usage]https://blog.stephane-robert.info/docs/developper/programmation/python/uv/
 
 ### AI Usage
 AI was used for the following tasks :

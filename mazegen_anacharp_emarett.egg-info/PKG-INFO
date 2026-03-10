@@ -141,6 +141,7 @@ For programing we used **pydantic** and **pygame**
 - [Pygame keys]https://www.pygame.org/docs/ref/key.html
 #### Else
 - [GIT usage for groups]https://git-scm.com/book/fr/v2/Les-branches-avec-Git-Gestion-des-branches
+- [Uv usage]https://blog.stephane-robert.info/docs/developper/programmation/python/uv/
 
 ### AI Usage
 AI was used for the following tasks :

@@ -6,6 +6,7 @@ import sys
 import os
 from typing import TYPE_CHECKING, Any
 import time
+import random
 
 if TYPE_CHECKING:
     import pygame.sprite
@@ -325,11 +326,6 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
     raw_width: int | Any = maze_datas.get("WIDTH")
     raw_height: int | Any = maze_datas.get("HEIGHT")
 
-    if raw_width//2 >= 233:
-        raise ValueError("Width too hight for pygame mode")
-    if raw_height//2 >= 88:
-        raise ValueError("Height too hight for pygame mode")
-
     if not isinstance(raw_inp, tuple) or not isinstance(raw_outp, tuple):
         raise ValueError("ERROR: invalid ENTRY or EXIT")
     if not isinstance(raw_width, int) or not isinstance(raw_height, int):
@@ -594,9 +590,11 @@ def draw_maze(maze_datas: dict[str, Any], i: int,
                        x, y, x1, y1, x2, y2, color_ft, COLORS[i])
             if won:
                 if play:
+                    scary = ["scary.wav", "scary1.wav"]
+                    n = random.randint(-1, 1)
                     base_dir = os.path.dirname(os.path.abspath(__file__))
                     sound_path = os.path.join(base_dir, "resources",
-                                              "scary.wav")
+                                              scary[n])
                     sound = pygame.mixer.Sound(sound_path)
                     sound.set_volume(1.0)
                     sound.play()
