@@ -11,6 +11,8 @@ def a_maze_ing() -> None:
     try:
         if len(sys.argv) != 2:
             raise ValueError("must have 2 arg")
+        if not sys.argv[1].endswith(".txt"):
+            raise ValueError("file must be a .txt")
         maze = MazeGenerator(sys.argv[1])
         maze.create_maze()
 
